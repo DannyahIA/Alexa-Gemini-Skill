@@ -12,7 +12,7 @@ if not GEMINI_API_KEY:
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-stdout(genai.list_models())
+print(genai.list_models())
 
 # AQUI ESTÁ A ALTERAÇÃO: Mude "gemini-pro" para "gemini-1.0-pro"
 model = genai.GenerativeModel("gemini-2.0")
@@ -43,5 +43,6 @@ Pergunta: {pergunta}
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
+
 
 
