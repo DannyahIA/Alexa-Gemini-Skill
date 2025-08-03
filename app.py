@@ -7,6 +7,8 @@ app = Flask(__name__)
 CORS(app)  # Permitir chamadas de qualquer origem (ou restrinja depois)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise RuntimeError("A variável de ambiente GEMINI_API_KEY não está definida.")
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-pro")
@@ -26,6 +28,13 @@ Pergunta: {pergunta}
 
     try:
         response = model.generate_content(prompt)
-        return jsonify({"resposta": response.text.strip()})
+        resposta = getattr(response, "text", None)
+        if not resposta:
+            return jsonify({"erro": "Resposta vazia do modelo."}), 500
+        return jsonify({"resposta": resposta.strip()})
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
