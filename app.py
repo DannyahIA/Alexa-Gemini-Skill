@@ -4,14 +4,16 @@ import os
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Permitir chamadas de qualquer origem (ou restrinja depois)
+CORS(app)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise RuntimeError("A variável de ambiente GEMINI_API_KEY não está definida.")
 
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-pro")
+
+# Usar modelo padrão, ex: 'models/text-bison-001'
+model = genai.GenerativeModel(model_name="models/text-bison-001")
 
 @app.route("/perguntar", methods=["GET"])
 def perguntar():
@@ -24,7 +26,7 @@ def perguntar():
 Você é uma assistente virtual brasileira chamada 'Assistente Inteligente'.
 Responda de forma amigável, natural e concisa (2 a 3 frases), pois a resposta será falada por uma assistente de voz.
 Pergunta: {pergunta}
-    """
+"""
 
     try:
         response = model.generate_content(prompt)
@@ -36,6 +38,5 @@ Pergunta: {pergunta}
         return jsonify({"erro": str(e)}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
