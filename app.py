@@ -12,8 +12,8 @@ if not GEMINI_API_KEY:
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Usar modelo padrão, ex: 'models/text-bison-001'
-model = genai.GenerativeModel(model_name="models/text-bison-001")
+# AQUI ESTÁ A ALTERAÇÃO: Mude "gemini-pro" para "gemini-1.0-pro"
+model = genai.GenerativeModel("gemini-1.0-pro")
 
 @app.route("/perguntar", methods=["GET"])
 def perguntar():
@@ -26,11 +26,12 @@ def perguntar():
 Você é uma assistente virtual brasileira chamada 'Assistente Inteligente'.
 Responda de forma amigável, natural e concisa (2 a 3 frases), pois a resposta será falada por uma assistente de voz.
 Pergunta: {pergunta}
-"""
+    """
 
     try:
         response = model.generate_content(prompt)
-        resposta = getattr(response, "text", None)
+        # O 'getattr' é uma boa prática, mas aqui podemos simplificar
+        resposta = response.text
         if not resposta:
             return jsonify({"erro": "Resposta vazia do modelo."}), 500
         return jsonify({"resposta": resposta.strip()})
@@ -38,5 +39,5 @@ Pergunta: {pergunta}
         return jsonify({"erro": str(e)}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
